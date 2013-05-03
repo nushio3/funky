@@ -12,6 +12,8 @@ data Inst a
   | Unary (a -> a) Int
   | Binary (a -> a -> a) Int Int
 
+fromList :: [Inst a] -> Machine a
+fromList = Machine . V.fromList
 
 data Machine a = Machine
   { instructions :: V.Vector (Inst a) }
