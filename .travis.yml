@@ -1,3 +1,3 @@
 language: haskell
 before_install:
-        cabal update
+  make ghc-7.6.1;
