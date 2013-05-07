@@ -1,10 +1,30 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Funky.Machine where
 
 import           Data.Default
 import           Data.Maybe
+import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
+
+{-| Class of type constructor @t@ such that @t a@ is a homogeneous tuple -}
+class Tap t where
+  type TFun t a :: *        
+  tap :: t a -> TFun t a -> a
+
+instance Tap Vec where
+  type TFun Vec a = a
+  tap _ f = f
+
+instance Tap v => Tap ((:~) v) where
+  type TFun ((:~) v) a = a -> TFun v a
+  tap (vx :~ x) f = vx `tap` f x
+
+
+
 
 data Inst a
   = Nop
