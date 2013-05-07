@@ -19,6 +19,7 @@ library
   build-depends:     base ==4.*
                    , containers >= 0.5
                    , data-default >= 0.5.3
+                   , typelevel-tensor >= 0.2.1
                    , vector >= 0.10
 
 Test-Suite doctests
