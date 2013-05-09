@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TypeFamilies #-}
 import Data.Tensor.TypeLevel
@@ -17,9 +18,9 @@ instance Tap v => Tap ((:~) v) where
   tap f (vx :~ x) = f x `tap` vx
 
 
-data Inst a
-  = Nop
-  | Inst (Vec a)
+data Inst a where
+  Nop :: Inst a
+  Inst :: (TFun t a) -> t Int -> Inst a
 
 
 tmul :: Num a => Vec2 a -> a
