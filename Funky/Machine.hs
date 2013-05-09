@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
@@ -11,27 +12,29 @@ import           Data.Maybe
 import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
 
-{-| Class of type constructor @t@ such that @t a@ is a homogeneous tuple -}
+{-| Tuple apply.
+    'Tap' @t@ states that @t@ is a data constructor like a homogeneous tuple,
+    that supports uncurried function application.
+ -}
 class Tap t where
+  -- | The type of the curried function     
+  --   that can be applied to @t a@.
   type TFun t a :: *        
-  tap :: t a -> TFun t a -> a
+  -- | Apply 'TFun t a' to 't a' .
+  tap :: TFun t a -> t a -> a
 
 instance Tap Vec where
   type TFun Vec a = a
-  tap _ f = f
+  tap f _ = f
 
 instance Tap v => Tap ((:~) v) where
   type TFun ((:~) v) a = a -> TFun v a
-  tap (vx :~ x) f = vx `tap` f x
+  tap f (vx :~ x) = f x `tap` vx
 
 
-
-
-data Inst a
-  = Nop
-  | Imm a
-  | Unary (a -> a) Int
-  | Binary (a -> a -> a) Int Int
+data Inst a where
+  Nop :: Inst a
+  Inst :: (Tap t, Functor t) => (TFun t a) -> t Int -> Inst a
 
 fromList :: [Inst a] -> Machine a
 fromList = Machine . V.fromList
@@ -54,9 +57,17 @@ eval (Machine insts) = ret
     compute :: Int -> Inst a -> a
     compute idx inst = case inst of
       Nop -> def
-      Imm f -> f
-      Unary f a0 -> f $ get (idx-a0)
-      Binary f a0 a1 -> f (get $ idx-a0) (get $ idx-a1)
+      Inst f idxs -> f `tap` fmap (get . (idx-)) idxs
 
     get :: Int -> a
     get addr = maybe def id (ret V.!? addr)
+
+
+imm :: a -> Inst a
+imm x = Inst x Vec
+
+una :: (a -> a) -> Int -> Inst a
+una f x = Inst f $ vec1 x 
+
+bin :: (a -> a -> a) -> Int -> Int -> Inst a
+bin f x y = Inst f $ vec2 y x

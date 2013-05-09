@@ -8,18 +8,18 @@ import           Funky.Machine
 
 machine1 :: Machine Double
 machine1 = fromList 
-  [ Imm 6
-  , Imm 7 
-  , Binary (*) 1 2]
+  [ imm 6
+  , imm 7 
+  , bin (*) 1 2]
 
 machine2 :: Machine Int
 machine2 = fromList 
-  [ Imm 6
-  , Imm 7 
-  , Binary (-) 3 1
-  , Binary (+) 3 (-5)
-  , Binary (*) 2 1
-  , Unary negate 1]
+  [ imm 6
+  , imm 7 
+  , bin (-) 3 1
+  , bin (+) 3 (-5)
+  , bin (*) 2 1
+  , una negate 1]
 
 
 spec :: Spec
