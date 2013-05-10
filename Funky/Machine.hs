@@ -27,47 +27,51 @@ instance Tap Vec where
   type TFun Vec a = a
   tap f _ = f
 
+instance Tap [] where
+  type TFun [] a = [a] -> a
+  tap f xs = f xs
+
+
 instance Tap v => Tap ((:~) v) where
   type TFun ((:~) v) a = a -> TFun v a
   tap f (vx :~ x) = f x `tap` vx
 
+data Step a where
+  Step :: (Tap t, Functor t) => (TFun t a) -> t Int -> Step a
 
-data Inst a where
-  Nop :: Inst a
-  Inst :: (Tap t, Functor t) => (TFun t a) -> t Int -> Inst a
-
-fromList :: [Inst a] -> Machine a
+fromList :: [Step a] -> Executable a
 fromList = Machine . V.fromList
 
-data Machine a = Machine
-  { instructions :: V.Vector (Inst a) }
+type Executable a = Machine (Step a)
+
+newtype Machine a = Machine
+  { instructions :: V.Vector a }
 
 {-|
 
-'eval' turns the list of instructions into vector of results.
+'eval' the executable machine into vector of results.
 
 -}
 
-eval :: forall a. Default a => Machine a -> V.Vector a
+eval :: forall a. Default a => Machine (Step a) -> V.Vector a
 eval (Machine insts) = ret
   where
     ret :: V.Vector a
     ret = V.imap compute insts
 
-    compute :: Int -> Inst a -> a
+    compute :: Int -> Step a -> a
     compute idx inst = case inst of
-      Nop -> def
-      Inst f idxs -> f `tap` fmap (get . (idx-)) idxs
+      Step f idxs -> f `tap` fmap (get . (idx-)) idxs
 
     get :: Int -> a
     get addr = maybe def id (ret V.!? addr)
 
 
-imm :: a -> Inst a
-imm x = Inst x Vec
+imm :: a -> Step a
+imm x = Step x Vec
 
-una :: (a -> a) -> Int -> Inst a
-una f x = Inst f $ vec1 x 
+una :: (a -> a) -> Int -> Step a
+una f x = Step f $ vec1 x 
 
-bin :: (a -> a -> a) -> Int -> Int -> Inst a
-bin f x y = Inst f $ vec2 y x
+bin :: (a -> a -> a) -> Int -> Int -> Step a
+bin f x y = Step f $ vec2 y x

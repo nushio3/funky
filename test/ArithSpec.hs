@@ -6,13 +6,13 @@ import           Data.Vector ((!))
 import           Test.Hspec
 import           Funky.Machine
 
-machine1 :: Machine Double
+machine1 :: Executable Double
 machine1 = fromList 
   [ imm 6
   , imm 7 
   , bin (*) 1 2]
 
-machine2 :: Machine Int
+machine2 :: Executable Int
 machine2 = fromList 
   [ imm 6
   , imm 7 
