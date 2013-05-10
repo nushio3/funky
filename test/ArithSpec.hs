@@ -1,21 +1,18 @@
 module ArithSpec (spec) where
 
-
-import qualified Data.Vector as V
-import           Data.Vector ((!))
 import           Test.Hspec
 import           Funky.Machine
 
 import           Data.Tensor.TypeLevel hiding ((!))
 
-imm :: a -> Step a
-imm x = Step x Vec
+imm :: a -> Thunk a
+imm x = Thunk x Vec
 
-una :: (a -> a) -> Int -> Step a
-una f x = Step f $ vec1 x 
+una :: (a -> a) -> Int -> Thunk a
+una f x = Thunk f $ vec1 x 
 
-bin :: (a -> a -> a) -> Int -> Int -> Step a
-bin f x y = Step f $ vec2 y x
+bin :: (a -> a -> a) -> Int -> Int -> Thunk a
+bin f x y = Thunk f $ vec2 y x
 
 
 machine1 :: Executable Double
@@ -38,7 +35,7 @@ spec :: Spec
 spec = do
   describe "Funky Machine" $ do
     it "gives answer to everything" $ do
-      let ret = eval machine1 
-      (ret ! 2) `shouldBe` 42
+      let ret = toList $ eval machine1 
+      (ret !! 2) `shouldBe` 42
     it "gives the default where out of index" $ do
-      eval machine2 `shouldBe` V.fromList [6,7,-7,6,-42,42]
+      (toList $ eval machine2) `shouldBe` [6,7,-7,6,-42,42]

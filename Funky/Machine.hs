@@ -37,21 +37,30 @@ instance Tap v => Tap ((:~) v) where
   type TFun ((:~) v) a b = a -> TFun v a b
   tap f (vx :~ x) = f x `tap` vx
 
-data Step a where
-  Step :: (Tap t, Functor t) => (TFun t a a) -> t Int -> Step a
+data Thunk a where
+  Thunk :: (Tap t, Functor t) => (TFun t a a) -> t Int -> Thunk a
 
 newtype Machine a = Machine
-  { instructions :: V.Vector a }
+  { unMachine :: V.Vector a }
 
-fromList :: [Step a] -> Executable a
-fromList = Machine . V.fromList
 
 -- | Source code of a machine, that can be modified, written to/from a file.
 type Program = Machine Instruction
 
 -- | Machine that is ready for computing values of type @a@ .
-type Executable a = Machine (Step a)
+type Executable a = Machine (Thunk a)
 
+-- | Machine that is fully evaluated.
+type Executed a = Machine a
+
+
+-- | Utility function for creating machine.
+fromList :: [a] -> Machine a
+fromList = Machine . V.fromList
+
+-- | Utility function for converting a machine to a list.
+toList :: Machine a -> [a] 
+toList =  V.toList . unMachine
 
 
 {-|
@@ -60,15 +69,15 @@ evaluate the executable machine into vector of results.
 
 -}
 
-eval :: forall a. Default a => Machine (Step a) -> V.Vector a
-eval (Machine insts) = ret
+eval :: forall a. Default a => Machine (Thunk a) -> Machine a
+eval (Machine insts) = Machine ret
   where
     ret :: V.Vector a
     ret = V.imap compute insts
 
-    compute :: Int -> Step a -> a
+    compute :: Int -> Thunk a -> a
     compute idx inst = case inst of
-      Step f idxs -> f `tap` fmap get idxs
+      Thunk f idxs -> f `tap` fmap get idxs
 
     get :: Int -> a
     get addr = maybe def id (ret V.!? addr)
