@@ -2,6 +2,7 @@ module ArithSpec (spec) where
 
 import           Test.Hspec
 import           Control.Funky
+import qualified Control.Funky.Compiler.Instances as C
 
 import           Data.Tensor.TypeLevel hiding ((!))
 
@@ -37,6 +38,11 @@ machine3 = fromList
   , Add (vec2 0 1)]
 
 
+forceCompile :: [PartialCompiler a] -> Program -> Executable a
+forceCompile pcs prog = case runCompilers pcs prog of
+  Right ret -> ret
+  Left  msg -> error msg             
+
 spec :: Spec
 spec = do
   describe "Funky Machine" $ do
@@ -45,3 +51,7 @@ spec = do
       (ret !! 2) `shouldBe` 42
     it "gives the default where out of index" $ do
       (toList $ run machine2) `shouldBe` [6,7,-7,6,-42,42]
+  describe "Funky Compiler" $ do
+    it "should compile and execute" $ do
+      (toList $ run $ forceCompile [C.num, C.read] machine3) 
+         `shouldBe` [6,7,13 :: Double]
