@@ -22,16 +22,16 @@ machine1 :: Executable Double
 machine1 = fromList 
   [ imm 6
   , imm 7 
-  , bin (*) 1 2]
+  , bin (*) 0 1]
 
 machine2 :: Executable Int
 machine2 = fromList 
   [ imm 6
   , imm 7 
-  , bin (-) 3 1
-  , bin (+) 3 (-5)
-  , bin (*) 2 1
-  , una negate 1]
+  , bin (-) (-1) 1
+  , bin (+) 0 500
+  , bin (*) 2 3
+  , una negate 4]
 
 
 spec :: Spec

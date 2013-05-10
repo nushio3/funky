@@ -68,7 +68,7 @@ eval (Machine insts) = ret
 
     compute :: Int -> Step a -> a
     compute idx inst = case inst of
-      Step f idxs -> f `tap` fmap (get . (idx-)) idxs
+      Step f idxs -> f `tap` fmap get idxs
 
     get :: Int -> a
     get addr = maybe def id (ret V.!? addr)
