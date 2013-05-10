@@ -2,14 +2,16 @@ name:                funky
 version:             0.1.0.0
 synopsis:            Simple Library for Representing and Manipulating Analytic Expressions
 
-description:         Funky is a library for representing analytic computations
-                     in forms of virtual machine operational semantics
-                     in SSA form. An important constraint is that Funky limits
-                     itself to computation over a single type (that would
-                     probably represent real numbers.) This is because Funky
-                     bares integration and differentiation operations in mind.
-                     The constraint also makes the design simpler and easier
-                     to operate on.
+description:         Funky is a casual virtual machine. It is a library for
+                     representing analytic computations in forms of
+                     virtual machine operational semantics in SSA
+                     form. An important constraint is that Funky
+                     limits itself to computation over a single type
+                     (that would probably represent real numbers.)
+                     This is because Funky bares integration and
+                     differentiation operations in mind.  The
+                     constraint also makes the design simpler and
+                     easier to operate on.
 
 homepage:            https://github.com/nushio3/funky
 license:             BSD3
@@ -23,11 +25,11 @@ cabal-version:       >=1.8
 
 library
   exposed-modules:   Control.Funky
-                     Control.Funky.Compile
+                     Control.Funky.Compiler
+                     Control.Funky.Compiler.Instances
                      Control.Funky.Instruction
-                     Control.Funky.Machine  
+                     Control.Funky.Type
                      Control.Funky.Run
-                     Control.Funky.Translate
 
   -- other-modules:       
   build-depends:     base ==4.*

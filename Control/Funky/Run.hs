@@ -1,8 +1,12 @@
-module Funky.Evaluation where
+{-# LANGUAGE ScopedTypeVariables #-}
 
-import           Data.Default
+module Control.Funky.Run where
 
-import           Funky.Machine
+import           Data.Default (Default, def)
+import qualified Data.Vector as V
+
+import           Control.Funky.Type
+
 
 {-|
 
@@ -10,8 +14,8 @@ evaluate the executable machine into vector of results.
 
 -}
 
-eval :: Default a => Machine (Thunk a) -> Machine a
-eval (Machine insts) = Machine ret
+run :: forall a. Default a => Machine (Thunk a) -> Machine a
+run (Machine insts) = Machine ret
   where
     ret :: V.Vector a
     ret = V.imap compute insts

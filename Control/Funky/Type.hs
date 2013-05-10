@@ -5,13 +5,13 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module Funky.Machine where
+module Control.Funky.Type where
 
 import           Data.Maybe
 import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
 
-import           Funky.Instruction
+import           Control.Funky.Instruction
 
 {-| Tuple application.
     'Tap' @t@ states that @t@ is a data constructor like a homogeneous tuple,

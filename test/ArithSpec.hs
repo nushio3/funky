@@ -1,7 +1,7 @@
 module ArithSpec (spec) where
 
 import           Test.Hspec
-import           Funky.Machine
+import           Control.Funky
 
 import           Data.Tensor.TypeLevel hiding ((!))
 
@@ -30,12 +30,18 @@ machine2 = fromList
   , bin (*) 2 3
   , una negate 4]
 
+machine3 :: Program
+machine3 = fromList
+  [ Imm "6"
+  , Imm "7"
+  , Add (vec2 0 1)]
+
 
 spec :: Spec
 spec = do
   describe "Funky Machine" $ do
     it "gives answer to everything" $ do
-      let ret = toList $ eval machine1 
+      let ret = toList $ run machine1 
       (ret !! 2) `shouldBe` 42
     it "gives the default where out of index" $ do
-      (toList $ eval machine2) `shouldBe` [6,7,-7,6,-42,42]
+      (toList $ run machine2) `shouldBe` [6,7,-7,6,-42,42]

@@ -23,7 +23,7 @@ main :: IO ()
 main = do
   files <-
     fmap concat $
-    mapM findHs ["Funky"]
+    mapM findHs ["Control"]
 
   putStrLn $ "testing: " ++ unwords files
   doctest files
