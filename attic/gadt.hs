@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TypeFamilies #-}
 import Data.Default
@@ -28,20 +29,29 @@ instance Tap v => Tap ((:~) v) where
 -- google homogeneous tuple in haskell.
 
 data Inst a where
-  Nop :: Inst a
-  Inst :: (Tap t, Functor t) => (TFun t a) -> t Integer -> Inst a
+  Inst :: (Tap t, Functor t) => TFun t a -> t Integer -> Inst a
+
+
+data Op
+  = Nop
+  | Negate (Vec1 Integer)
+  | Add (Vec2 Integer)
+  
+translate :: (Default a, Num a) => Op -> Inst a
+translate Nop = Inst def Vec
+translate (Negate x) = Inst negate x
+translate (Add x) = Inst (+) x
 
 tmul :: Num a => Vec2 a -> a
 tmul = tap (*)
 
 eval :: (Default a, Num a) => Inst a -> a
-eval Nop = def
 eval (Inst f v) = tap f (fmap fromInteger v)
 
 
 
 main :: IO ()
 main = do
-  print $ eval $ (Nop :: Inst Double)
-  print $ eval $ (Inst (*)  (vec2 6 7) :: Inst Double)
+  print $ eval $ (translate Nop :: Inst Double)
+  print $ eval $ (translate $ Add (vec2 6 7) :: Inst Double)
 
