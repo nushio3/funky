@@ -7,7 +7,6 @@
 
 module Funky.Machine where
 
-import           Data.Default
 import           Data.Maybe
 import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
@@ -63,21 +62,3 @@ toList :: Machine a -> [a]
 toList =  V.toList . unMachine
 
 
-{-|
-
-evaluate the executable machine into vector of results.
-
--}
-
-eval :: forall a. Default a => Machine (Thunk a) -> Machine a
-eval (Machine insts) = Machine ret
-  where
-    ret :: V.Vector a
-    ret = V.imap compute insts
-
-    compute :: Int -> Thunk a -> a
-    compute idx inst = case inst of
-      Thunk f idxs -> f `tap` fmap get idxs
-
-    get :: Int -> a
-    get addr = maybe def id (ret V.!? addr)

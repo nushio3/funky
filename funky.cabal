@@ -22,9 +22,12 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 library
-  exposed-modules:   Funky.Instruction
-                     Funky.Machine  
-                     Funky.Translate
+  exposed-modules:   Control.Funky
+                     Control.Funky.Compile
+                     Control.Funky.Instruction
+                     Control.Funky.Machine  
+                     Control.Funky.Run
+                     Control.Funky.Translate
 
   -- other-modules:       
   build-depends:     base ==4.*
