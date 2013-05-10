@@ -31,7 +31,6 @@ instance Tap [] where
   type TFun [] a = [a] -> a
   tap f xs = f xs
 
-
 instance Tap v => Tap ((:~) v) where
   type TFun ((:~) v) a = a -> TFun v a
   tap f (vx :~ x) = f x `tap` vx
@@ -49,7 +48,7 @@ newtype Machine a = Machine
 
 {-|
 
-'eval' the executable machine into vector of results.
+evaluate the executable machine into vector of results.
 
 -}
 

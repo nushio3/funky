@@ -4,7 +4,7 @@ import           Data.Tensor.TypeLevel
 
 type Addr = Int
 
-Instruction 
+data Instruction 
   = Nop
   | Theta (Vec3 Addr)
   | Add (Vec2 Addr)
