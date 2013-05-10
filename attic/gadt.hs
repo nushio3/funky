@@ -11,10 +11,21 @@ import Data.Tensor.TypeLevel
     'Tap' is a data constructor which is similar to tuple,
     that supports uncurried function application.
  -}
-class Tap t where
-  -- | The type of the curried function     
+
+class Tap2 t where
+  -- | The type of the curried function
   --   that can be applied to @t a@.
-  type TFun t a :: *        
+  type TFun2 (t a->b) :: *
+  -- | Apply 'TFun t a' to 't a' .
+  tap :: TFun t a -> t a -> a
+
+
+
+
+class Tap t where
+  -- | The type of the curried function
+  --   that can be applied to @t a@.
+  type TFun t a :: *
   -- | Apply 'TFun t a' to 't a' .
   tap :: TFun t a -> t a -> a
 
@@ -36,7 +47,7 @@ data Op
   = Nop
   | Negate (Vec1 Integer)
   | Add (Vec2 Integer)
-  
+
 translate :: (Default a, Num a) => Op -> Inst a
 translate Nop = Inst def Vec
 translate (Negate x) = Inst negate x
@@ -54,4 +65,3 @@ main :: IO ()
 main = do
   print $ eval $ (translate Nop :: Inst Double)
   print $ eval $ (translate $ Add (vec2 6 7) :: Inst Double)
-

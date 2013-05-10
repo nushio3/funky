@@ -6,6 +6,18 @@ import           Data.Vector ((!))
 import           Test.Hspec
 import           Funky.Machine
 
+import           Data.Tensor.TypeLevel hiding ((!))
+
+imm :: a -> Step a
+imm x = Step x Vec
+
+una :: (a -> a) -> Int -> Step a
+una f x = Step f $ vec1 x 
+
+bin :: (a -> a -> a) -> Int -> Int -> Step a
+bin f x y = Step f $ vec2 y x
+
+
 machine1 :: Executable Double
 machine1 = fromList 
   [ imm 6

@@ -12,39 +12,47 @@ import           Data.Maybe
 import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
 
-{-| Tuple apply.
+import           Funky.Instruction
+
+{-| Tuple application.
     'Tap' @t@ states that @t@ is a data constructor like a homogeneous tuple,
     that supports uncurried function application.
  -}
 class Tap t where
-  -- | The type of the curried function     
-  --   that can be applied to @t a@.
-  type TFun t a :: *        
+  -- | 'TFun t a b' is the type of the curried version of 
+  --  the function of type @t a -> b@ .
+  type TFun t a b :: *        
   -- | Apply 'TFun t a' to 't a' .
-  tap :: TFun t a -> t a -> a
+  tap :: TFun t a b -> t a -> b
 
 instance Tap Vec where
-  type TFun Vec a = a
+  type TFun Vec a b = b
   tap f _ = f
 
 instance Tap [] where
-  type TFun [] a = [a] -> a
-  tap f xs = f xs
+  type TFun [] a b = [a] -> b
+  tap f = f 
 
 instance Tap v => Tap ((:~) v) where
-  type TFun ((:~) v) a = a -> TFun v a
+  type TFun ((:~) v) a b = a -> TFun v a b
   tap f (vx :~ x) = f x `tap` vx
 
 data Step a where
-  Step :: (Tap t, Functor t) => (TFun t a) -> t Int -> Step a
+  Step :: (Tap t, Functor t) => (TFun t a a) -> t Int -> Step a
+
+newtype Machine a = Machine
+  { instructions :: V.Vector a }
 
 fromList :: [Step a] -> Executable a
 fromList = Machine . V.fromList
 
+-- | Source code of a machine, that can be modified, written to/from a file.
+type Program = Machine Instruction
+
+-- | Machine that is ready for computing values of type @a@ .
 type Executable a = Machine (Step a)
 
-newtype Machine a = Machine
-  { instructions :: V.Vector a }
+
 
 {-|
 
@@ -64,13 +72,3 @@ eval (Machine insts) = ret
 
     get :: Int -> a
     get addr = maybe def id (ret V.!? addr)
-
-
-imm :: a -> Step a
-imm x = Step x Vec
-
-una :: (a -> a) -> Int -> Step a
-una f x = Step f $ vec1 x 
-
-bin :: (a -> a -> a) -> Int -> Int -> Step a
-bin f x y = Step f $ vec2 y x
