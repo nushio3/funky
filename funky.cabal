@@ -36,6 +36,7 @@ library
                    , containers >= 0.5
                    , data-default >= 0.5.3
                    , typelevel-tensor >= 0.2.1
+                   , safe >= 0.3.3
                    , vector >= 0.10
 
 Test-Suite doctests
@@ -44,9 +45,12 @@ Test-Suite doctests
   Ghc-Options:       -threaded -Wall
   Main-Is:           doctests.hs
   Build-Depends:     base
+                   , funky
+
                    , doctest >= 0.9.3
                    , directory >= 1.2
                    , filepath >= 1.3
+
 
 
 Test-Suite spec

@@ -35,6 +35,7 @@ machine3 :: Program
 machine3 = fromList
   [ Imm "6"
   , Imm "7"
+  , Imm "hachi"
   , Add (vec2 0 1)]
 
 
@@ -53,5 +54,5 @@ spec = do
       (toList $ run machine2) `shouldBe` [6,7,-7,6,-42,42]
   describe "Funky Compiler" $ do
     it "should compile and execute" $ do
-      (toList $ run $ forceCompile [C.num, C.read] machine3) 
-         `shouldBe` [6,7,13 :: Double]
+      (toList $ run $ forceCompile [C.num, C.read, C.def] machine3) 
+         `shouldBe` [6,7,0,13 :: Double]
