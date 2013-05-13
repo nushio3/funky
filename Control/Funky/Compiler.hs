@@ -8,10 +8,10 @@ import           Control.Funky.Instruction
 import           Control.Funky.Type
 
 -- | The name and the function of the compiler
-type PartialCompiler a = (String, Instruction -> Maybe (Thunk a))
+type PartialCompiler a = (String, Instruction a -> Maybe (Thunk a))
 
-runCompilers :: forall a.
-             [PartialCompiler a] -> Program -> Either String (Executable a)
+runCompilers :: forall a. Show a => 
+             [PartialCompiler a] -> Program a -> Either String (Executable a)
 
 runCompilers pcs prog =
   case retE of
@@ -23,19 +23,19 @@ runCompilers pcs prog =
 
   where
     retE :: Either
-      Instruction {- this instruction remained unprocessed -}
-      [Thunk a]   {- all the instructions successfully processed -}
+      (Instruction a) {- this instruction remained unprocessed -}
+      [Thunk a]       {- all the instructions successfully processed -}
     retE = sequence $ map (revolute . runPCs) $ toList prog
 
     revolute :: Either x y -> Either y x
     revolute (Left x) = Right x
     revolute (Right y) = Left y
 
-    runPCs :: Instruction -> Either (Thunk a) Instruction
+    runPCs :: Instruction a -> Either (Thunk a) (Instruction a)
     runPCs inst = foldl (>>=) (return inst) (map runPC pcs)
 
     runPC :: PartialCompiler a
-          -> Instruction -> Either (Thunk a) Instruction
+          -> Instruction a -> Either (Thunk a) (Instruction a)
     runPC (_,pcBody) inst = case pcBody inst of
        -- here we use 'Left' to denote the state that requires no
        -- further processing.

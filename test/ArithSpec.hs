@@ -31,15 +31,15 @@ machine2 = fromList
   , bin (*) 2 3
   , una negate 4]
 
-machine3 :: Program
+machine3 :: Program Double
 machine3 = fromList
-  [ Imm "6"
-  , Imm "7"
-  , Imm "hachi"
+  [ Imm 6
+  , Imm 7
+  , Nop
   , Add (vec2 0 1)]
 
 
-forceCompile :: [PartialCompiler a] -> Program -> Executable a
+forceCompile :: Show a => [PartialCompiler a] -> Program a -> Executable a
 forceCompile pcs prog = case runCompilers pcs prog of
   Right ret -> ret
   Left  msg -> error msg             
@@ -54,5 +54,5 @@ spec = do
       (toList $ run machine2) `shouldBe` [6,7,-7,6,-42,42]
   describe "Funky Compiler" $ do
     it "should compile and execute" $ do
-      (toList $ run $ forceCompile [C.num, C.read, C.def] machine3) 
+      (toList $ run $ forceCompile [C.num, C.imm, C.def] machine3) 
          `shouldBe` [6,7,0,13 :: Double]

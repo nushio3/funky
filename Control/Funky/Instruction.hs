@@ -7,9 +7,9 @@ import qualified Test.QuickCheck.Gen as QC
 
 type Addr = Int
 
-data Instruction 
+data Instruction a
   = Nop
-  | Imm String
+  | Imm a -- values can most possibly be serialized, but functions cannot.
   | Select (Vec3 Addr)
   | Theta (Vec1 Addr)
   | Add (Vec2 Addr)
@@ -21,10 +21,7 @@ data Instruction
   | Prod [Addr]
   deriving (Eq, Show)
 
-instance QC.Arbitrary Instruction where
-  arbitrary = QC.oneof 
-    [ return Nop 
-    , Imm <$> QC.oneof 
-        [ show <$> (QC.arbitrary :: QC.Gen Double)
-        , show <$> (QC.arbitrary :: QC.Gen Int)
-        ]]
+instance QC.Arbitrary a => QC.Arbitrary (Instruction a) where
+  arbitrary = QC.oneof
+    [ return Nop
+    , Imm <$> QC.arbitrary ]

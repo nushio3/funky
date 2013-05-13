@@ -25,12 +25,10 @@ ord = ("Ord", go) where
   go (Theta xs)  = Just $ Thunk (\x -> if x >0 then 1 else 0) xs
   go _           = Nothing
 
-read :: Read a => PartialCompiler a
-read = ("Read", go) where
-  go (Imm str) = do
-    x <- Safe.readMay str
-    return $ Thunk x Vec
-  go _         = Nothing
+imm :: PartialCompiler a
+imm = ("Imm", go) where
+  go (Imm x) = Just $ Thunk x Vec
+  go _       = Nothing
 
 num :: Num a => PartialCompiler a
 num = ("Num", go) where

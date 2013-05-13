@@ -43,7 +43,7 @@ newtype Machine a = Machine
 
 
 -- | Source code of a machine, that can be modified, written to/from a file.
-type Program = Machine Instruction
+type Program a = Machine (Instruction a)
 
 -- | Machine that is ready for computing values of type @a@ .
 type Executable a = Machine (Thunk a)
