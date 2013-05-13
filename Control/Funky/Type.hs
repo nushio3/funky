@@ -7,7 +7,6 @@
 
 module Control.Funky.Type where
 
-import           Data.Maybe
 import           Data.Tensor.TypeLevel
 import qualified Data.Vector as V
 

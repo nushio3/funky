@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module Control.Funky.Compiler.Instances where
 
 import qualified Data.Default as Default
@@ -10,26 +11,31 @@ import           Prelude hiding (read)
 import qualified Safe
 
 nop :: Default.Default a => PartialCompiler a
-nop Nop = Just $ Thunk Default.def Vec
-nop _   = Nothing
+nop = ("Nop", go) where
+  go Nop = Just $ Thunk Default.def Vec
+  go _   = Nothing
 
 def :: Default.Default a => PartialCompiler a
-def _ = Just $ Thunk Default.def Vec
+def = ("Default",go) where
+  go _ = Just $ Thunk Default.def Vec
 
 ord :: (Ord a, Num a) => PartialCompiler a
-ord (Select xs) = Just $ Thunk (\x y z -> if x<0 then y else z) xs
-ord (Theta xs)  = Just $ Thunk (\x -> if x >0 then 1 else 0) xs
-ord _           = Nothing
+ord = ("Ord", go) where
+  go (Select xs) = Just $ Thunk (\x y z -> if x<0 then y else z) xs
+  go (Theta xs)  = Just $ Thunk (\x -> if x >0 then 1 else 0) xs
+  go _           = Nothing
 
 read :: Read a => PartialCompiler a
-read (Imm str) = do
-  x <- Safe.readMay str
-  return $ Thunk x Vec
-read _         = Nothing
+read = ("Read", go) where
+  go (Imm str) = do
+    x <- Safe.readMay str
+    return $ Thunk x Vec
+  go _         = Nothing
 
 num :: Num a => PartialCompiler a
-num (Add xs)    = Just $ Thunk (+) xs
-num (Sub xs)    = Just $ Thunk (flip (-)) xs
-num (Mul xs)    = Just $ Thunk (*) xs
-num (Negate xs) = Just $ Thunk negate xs
-num _           = Nothing
+num = ("Num", go) where
+  go (Add xs)    = Just $ Thunk (+) xs
+  go (Sub xs)    = Just $ Thunk (flip (-)) xs
+  go (Mul xs)    = Just $ Thunk (*) xs
+  go (Negate xs) = Just $ Thunk negate xs
+  go _           = Nothing

@@ -24,6 +24,8 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 library
+  Ghc-Options:       -O2 -Wall
+
   exposed-modules:   Control.Funky
                      Control.Funky.Compiler
                      Control.Funky.Compiler.Instances
@@ -35,9 +37,11 @@ library
   build-depends:     base ==4.*
                    , containers >= 0.5
                    , data-default >= 0.5.3
-                   , typelevel-tensor >= 0.2.1
+                   , QuickCheck >= 2
                    , safe >= 0.3.3
+                   , typelevel-tensor >= 0.2.1
                    , vector >= 0.10
+
 
 Test-Suite doctests
   Type:              exitcode-stdio-1.0
