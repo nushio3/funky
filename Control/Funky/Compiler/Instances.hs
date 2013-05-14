@@ -8,7 +8,6 @@ import           Control.Funky.Instruction
 import           Control.Funky.Type
 import           Data.Tensor.TypeLevel
 import           Prelude hiding (read)
-import qualified Safe
 
 nop :: Default.Default a => PartialCompiler a
 nop = ("Nop", go) where
@@ -19,16 +18,16 @@ def :: Default.Default a => PartialCompiler a
 def = ("Default",go) where
   go _ = Just $ Thunk Default.def Vec
 
+imm :: PartialCompiler a
+imm = ("Imm", go) where
+  go (Imm x) = Just $ Thunk x Vec
+  go _       = Nothing
+
 ord :: (Ord a, Num a) => PartialCompiler a
 ord = ("Ord", go) where
   go (Select xs) = Just $ Thunk (\x y z -> if x<0 then y else z) xs
   go (Theta xs)  = Just $ Thunk (\x -> if x >0 then 1 else 0) xs
   go _           = Nothing
-
-imm :: PartialCompiler a
-imm = ("Imm", go) where
-  go (Imm x) = Just $ Thunk x Vec
-  go _       = Nothing
 
 num :: Num a => PartialCompiler a
 num = ("Num", go) where
@@ -37,3 +36,7 @@ num = ("Num", go) where
   go (Mul xs)    = Just $ Thunk (*) xs
   go (Negate xs) = Just $ Thunk negate xs
   go _           = Nothing
+
+floating :: Floating a => PartialCompiler a
+floating = ("Floating", const Nothing) 
+  
