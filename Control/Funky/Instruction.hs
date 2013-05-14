@@ -28,6 +28,10 @@ data Instruction a
   | Sum [Addr]
   | Prod [Addr]
 
+  -- functions for Fractional
+  | Divide (Vec2 Addr)
+  | Recip  (Vec1 Addr)
+
   -- functions for Floating
   | Pi (Vec Addr)
   | Exp (Vec1 Addr)
