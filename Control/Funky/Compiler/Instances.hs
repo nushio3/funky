@@ -45,9 +45,9 @@ fractional = ("Fractional", go) where
 
 floating :: Floating a => PartialCompiler a
 floating = ("Floating", go) where
-  go (Pi xs)    = Just $ Thunk (const pi) xs
+  go (Pi xs)    = Just $ Thunk pi xs
   go (Exp xs)   = Just $ Thunk exp xs
-  go (Sqr xs)   = Just $ Thunk sqr xs
+  go (Sqrt xs)  = Just $ Thunk sqrt xs
   go (Log xs)   = Just $ Thunk log xs
   go (Sin xs)   = Just $ Thunk sin xs
   go (Cos xs)   = Just $ Thunk cos xs
