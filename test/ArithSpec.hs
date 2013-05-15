@@ -26,7 +26,7 @@ machine2 :: Executable Int
 machine2 = fromList 
   [ imm 6
   , imm 7 
-  , bin (-) (-1) 1
+  , bin (-) (-1) 1 
   , bin (+) 0 500
   , bin (*) 2 3
   , una negate 4]
