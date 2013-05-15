@@ -35,12 +35,15 @@ library
 
   -- other-modules:       
   build-depends:     base ==4.*
+                     
+                   , aeson >= 0.6.1
                    , containers >= 0.5
                    , data-default >= 0.5.3
                    , QuickCheck >= 2
                    , safe >= 0.3.3
                    , typelevel-tensor >= 0.2.1
                    , vector >= 0.10
+                   , yaml >= 0.8.2
 
 
 Test-Suite doctests
