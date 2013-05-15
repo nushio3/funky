@@ -1,7 +1,11 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Control.Funky.Instruction where
 
+import qualified Data.Aeson.TH as Aeson
 import           Control.Applicative ((<$>))
 import           Data.Tensor.TypeLevel
+import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.TH as Aeson
 import qualified Test.QuickCheck.Arbitrary as QC
 import qualified Test.QuickCheck.Gen as QC
 
@@ -52,6 +56,8 @@ data Instruction a
 
   
   deriving (Eq, Show)
+
+$(Aeson.deriveJSON id ''Instruction)
 
 instance QC.Arbitrary a => QC.Arbitrary (Instruction a) where
   arbitrary = QC.oneof
