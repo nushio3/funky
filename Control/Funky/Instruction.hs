@@ -57,7 +57,7 @@ data Instruction a
   
   deriving (Eq, Show)
 
-$(Aeson.deriveJSON id ''Instruction)
+-- $(Aeson.deriveJSON id ''Instruction)
 
 instance QC.Arbitrary a => QC.Arbitrary (Instruction a) where
   arbitrary = QC.oneof
